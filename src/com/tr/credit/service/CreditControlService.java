@@ -2,7 +2,12 @@ package com.tr.credit.service;
 
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.tr.credit.dao.CreditCustomerDao;
+import com.tr.credit.dao.CreditCustomerDaoImpl;
+import com.tr.credit.model.Customer;
 
 @Service
 public class CreditControlService {
@@ -14,7 +19,8 @@ public class CreditControlService {
 	
 	
 	
-	
+	@Autowired
+	private CreditCustomerDaoImpl creditCustomerDaoImpl;
 	
 	public Integer checkCreditScore(String tckn) {
 		//yazıldığı varsayılan dendiği için random bir değer döndürdüm. 
@@ -25,17 +31,19 @@ public class CreditControlService {
 		return random;
 	}
 	
-	public Integer returnCreditForCustomer(Integer creditScore, Integer income) {
+	public Integer returnCreditForCustomer(Integer creditScore, Customer customer) {
 		if(creditScore<CS_REJECTION_CRITERION) {
 			return null;
 		}
 		if(creditScore<CS_ACCEPTANCE_CRITERION) {
-			if(income < 5000) {
+			if(customer.getIncome() < 5000) {
 				return null;
 			}
+			creditCustomerDaoImpl.addCreditCustomerToDB(customer);
 			return 10000;
 		}
-		return income*CREDIT_LIMIT_MULTIPLER;
+		creditCustomerDaoImpl.addCreditCustomerToDB(customer);
+		return customer.getIncome()*CREDIT_LIMIT_MULTIPLER;
 		
 	}
 }

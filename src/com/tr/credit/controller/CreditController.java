@@ -44,8 +44,13 @@ public class CreditController {
 	            return "welcome";
 		}
 		 Integer customerCreditScore = creditControllerService.checkCreditScore(customer.getTckn());
-		 Integer returnedCredit = creditControllerService.returnCreditForCustomer(customerCreditScore, customer.getIncome());
-		 
+		 Integer returnedCredit = null;
+		 try {
+			 returnedCredit = creditControllerService.returnCreditForCustomer(customerCreditScore, customer);
+		 }catch (Exception e) {
+			 model.addAttribute("message", "İşleminizi gerçekleştiremiyoruz.");
+	            return "error";
+		}
 		 
 		 model.addAttribute("name", customer.getName());
 		 if(returnedCredit==null) {
